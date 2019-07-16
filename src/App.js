@@ -3,19 +3,41 @@ import './App.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import TreeView from "react-treeview";
+import "react-treeview/react-treeview.css";
 
+const dataSource = [
+    ['Apple', 'Orange'],
+    ['Facebook', 'Google'],
+    ['Celery', 'Cheeseburger'],
+];
 
 class App extends Component {
+
+
   constructor(props) {
     super(props);
     this.state = {
       startDate: null,
       endDate: null,
-      dayDifference: null
+      dayDifference: null,
+      collapsedBookkeeping: dataSource.map(() => false)
     };
     //this.handleChangeStart = this.handleChangeStart.bind(this);
     //this.handleChangeEnd = this.handleChangeEnd.bind(this);
   }
+
+    handleClick(i){
+        let [...collapsedBookkeeping] = this.state.collapsedBookkeeping;
+        collapsedBookkeeping[i] = !collapsedBookkeeping[i];
+        this.setState({collapsedBookkeeping: collapsedBookkeeping});
+    }
+
+    collapseAll() {
+        this.setState({
+            collapsedBookkeeping: this.state.collapsedBookkeeping.map(() => true),
+        });
+    }
+
   handleChangeStart(date) {
     this.setState({
       startDate: date
@@ -53,7 +75,7 @@ console.log(difference_ms);
     return String(Math.round(difference_ms/ONEDAY));
   }
   render() {
-    let nodes = [{"key":"NY", "val": "New York"}, {"key":"LA", "val": "Los Angeles"}];
+      const collapsedBookkeeping = this.state.collapsedBookkeeping;
     return (
       <div className="App">
         <header className="App-header">
@@ -68,9 +90,26 @@ console.log(difference_ms);
               id="endDate"
           /></div>
           <div className="row"><label>Days Difference : </label><label>{this.state.dayDifference}</label></div>
-          {nodes.map((element) =>
-          <TreeView key={element.key} nodeLabel={element.val}></TreeView>
-          )};
+            <div>
+                <button onClick={this.collapseAll}>Collapse all</button>
+                {dataSource.map((node, i) => {
+                    // Let's make it so that the tree also toggles when we click the
+                    // label. Controlled components make this effortless.
+                    const label =
+                        <span className="node" onClick={this.handleClick.bind(this, i)}>
+              Type {i}
+            </span>;
+                    return (
+                        <TreeView
+                            key={i}
+                            nodeLabel={label}
+                            collapsed={collapsedBookkeeping[i]}
+                            onClick={this.handleClick.bind(this, i)}>
+                            {node.map(entry => <div className="info" key={entry}>{entry}</div>)}
+                        </TreeView>
+                    );
+                })}
+            </div>
         </header>
       </div>
     );

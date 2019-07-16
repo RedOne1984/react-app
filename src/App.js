@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import TreeView from "react-treeview";
 
 
 class App extends Component {
@@ -12,8 +13,8 @@ class App extends Component {
       endDate: null,
       dayDifference: null
     };
-    this.handleChangeStart = this.handleChangeStart.bind(this);
-    this.handleChangeEnd = this.handleChangeEnd.bind(this);
+    //this.handleChangeStart = this.handleChangeStart.bind(this);
+    //this.handleChangeEnd = this.handleChangeEnd.bind(this);
   }
   handleChangeStart(date) {
     this.setState({
@@ -46,26 +47,30 @@ class App extends Component {
 
     let date2_ms = date2.getTime();
     // Calculate the difference in milliseconds
-    let difference_ms = Math.abs(date1_ms - date2_ms);
+    let difference_ms = date2_ms - date1_ms;
 console.log(difference_ms);
     // Convert back to days and return
     return String(Math.round(difference_ms/ONEDAY));
   }
   render() {
+    let nodes = [{"key":"NY", "val": "New York"}, {"key":"LA", "val": "Los Angeles"}];
     return (
       <div className="App">
         <header className="App-header">
           <div className="row"><label>Start Date : </label><DatePicker
               selected={this.state.startDate}
-              onChange={this.handleChangeStart}
+              onChange={this.handleChangeStart.bind(this)}
               id="startDate"
           /></div>
           <div className="row"><label>End Date : </label><DatePicker
               selected={this.state.endDate}
-              onChange={this.handleChangeEnd}
+              onChange={this.handleChangeEnd.bind(this)}
               id="endDate"
           /></div>
           <div className="row"><label>Days Difference : </label><label>{this.state.dayDifference}</label></div>
+          {nodes.map((element) =>
+          <TreeView key={element.key} nodeLabel={element.val}></TreeView>
+          )};
         </header>
       </div>
     );
